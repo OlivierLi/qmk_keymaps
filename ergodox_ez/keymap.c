@@ -51,11 +51,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_ESCAPE,      KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           CSA_LBRC,                                       CSA_RBRC,       KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           KC_DELETE,
     KC_TAB,         KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,           ST_MACRO_0,                                     ST_MACRO_2,     KC_Y,           KC_U,           KC_I,           KC_O,           KC_P,           CSA_BSLS,
     LT(1,KC_ESCAPE),KC_A,           KC_S,           KC_D,           KC_F,           KC_G,                                                                           KC_H,           KC_J,           KC_K,           KC_L,           KC_SCOLON,      CSA_RSPC,
-    MO(1),          KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,           ST_MACRO_1,                                     ST_MACRO_3,     KC_N,           KC_M,           KC_COMMA,       KC_DOT,         CSA_SLASH,      KC_RSHIFT,
+    KC_TRANSPARENT, KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,           ST_MACRO_1,                                     ST_MACRO_3,     KC_N,           KC_M,           KC_COMMA,       KC_DOT,         CSA_SLASH,      KC_TRANSPARENT,
     KC_LCTRL,       KC_LGUI,        KC_LALT,        CSA_LCBR,       KC_LPRN,                                                                                                        KC_RPRN,        CSA_RCBR,       KC_RALT,        KC_RGUI,        KC_RCTRL,
-                                                                                                    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, CSA_APOS,
+                                                                                                    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
                                                                                                                     KC_TRANSPARENT, KC_TRANSPARENT,
-                                                                                    LT(2,KC_SPACE), MO(4),   KC_LCTRL,       KC_RCTRL,       LT(5,KC_BSPACE),LT(3,KC_ENTER)
+                                                                                    LT(2,KC_SPACE), MO(4),          KC_LCTRL,       KC_RCTRL,       LT(5,KC_BSPACE),LT(3,KC_ENTER)
   ),
   [1] = LAYOUT_ergodox_pretty(
     KC_TRANSPARENT, KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_QUES,        KC_AMPR,        KC_ASTR,        KC_LPRN,        KC_RPRN,        KC_TRANSPARENT,
@@ -231,14 +231,14 @@ uint32_t layer_state_set_user(uint32_t state) {
         if(!disable_layer_color) {
           rgblight_enable_noeeprom();
           rgblight_mode_noeeprom(1);
-          rgblight_sethsv_noeeprom(197,255,195);
+          rgblight_sethsv_noeeprom(198,227,168);
         }
         break;
       case 1:
         if(!disable_layer_color) {
           rgblight_enable_noeeprom();
           rgblight_mode_noeeprom(1);
-          rgblight_sethsv_noeeprom(79,255,255);
+          rgblight_sethsv_noeeprom(198,227,168);
         }
         break;
       case 2:
