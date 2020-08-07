@@ -145,7 +145,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       perform_space_cadet(record, KC_LSFT, KC_LSFT, KC_9);
       return false;
     case CSA_RSPC:
-      perform_space_cadet(record, KC_LSFT, KC_LSFT, KC_0);
+      perform_space_cadet(record, KC_LSFT, KC_LSFT, KC_COMMA);
       return false;
     case RGB_SLD:
       if (record->event.pressed) {
