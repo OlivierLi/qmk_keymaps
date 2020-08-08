@@ -33,6 +33,9 @@
 #define LSA_T(kc) MT(MOD_LSFT | MOD_LALT, kc)
 #define BP_NDSH_MAC ALGR(KC_8)
 
+#define SHORT_MACRO_DELAY 10
+#define MEDIUM_MACRO_DELAY 50
+
 enum custom_keycodes {
   RGB_SLD = EZ_SAFE_RANGE,
   HSV_172_255_255,
@@ -42,6 +45,7 @@ enum custom_keycodes {
   ST_MACRO_1,
   ST_MACRO_2,
   ST_MACRO_3,
+  ST_MACRO_4,
   CSA_LSPO,
   CSA_RSPC,
 };
@@ -49,13 +53,13 @@ enum custom_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_ergodox_pretty(
     KC_ESCAPE,      KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           CSA_LBRC,                                       CSA_RBRC,       KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           KC_DELETE,
-    KC_TAB,         KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,           ST_MACRO_0,                                     ST_MACRO_2,     KC_Y,           KC_U,           KC_I,           KC_O,           KC_P,           CSA_BSLS,
+    KC_TAB,         KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,           LALT(LCTL(KC_H)),                                LALT(LCTL(KC_L)),KC_Y,           KC_U,           KC_I,           KC_O,           KC_P,           CSA_BSLS,
     LT(1,KC_ESCAPE),KC_A,           KC_S,           KC_D,           KC_F,           KC_G,                                                                           KC_H,           KC_J,           KC_K,           KC_L,           KC_SCOLON,      CSA_RSPC,
-    KC_LCTRL,       KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,           ST_MACRO_1,                                     ST_MACRO_3,     KC_N,           KC_M,           KC_COMMA,       KC_DOT,         CSA_SLASH,      KC_RCTRL,
+    MO(1),          KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,           ST_MACRO_0,                                     ST_MACRO_4,     KC_N,           KC_M,           KC_COMMA,       KC_DOT,         CSA_SLASH,      KC_RSHIFT,
     KC_LCTRL,       KC_LGUI,        KC_LALT,        CSA_LCBR,       KC_LPRN,                                                                                                        KC_RPRN,        CSA_RCBR,       KC_RALT,        KC_RGUI,        KC_RCTRL,
-                                                                                                    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
-                                                                                                                    KC_TRANSPARENT, KC_TRANSPARENT,
-                                                                                    LT(2,KC_SPACE), MO(4),          KC_TRANSPARENT, KC_TRANSPARENT, LT(5,KC_BSPACE),LT(3,KC_ENTER)
+                                                                                                    KC_TRANSPARENT, ST_MACRO_1,     KC_TRANSPARENT, KC_TRANSPARENT,
+                                                                                                                    ST_MACRO_2,     KC_TRANSPARENT,
+                                                                                    LT(2,KC_SPACE), MO(4),          ST_MACRO_3,     KC_TRANSPARENT, LT(5,KC_BSPACE),LT(3,KC_ENTER)
   ),
   [1] = LAYOUT_ergodox_pretty(
     KC_TRANSPARENT, KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_QUES,        KC_AMPR,        KC_ASTR,        KC_LPRN,        KC_RPRN,        KC_TRANSPARENT,
@@ -119,25 +123,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case ST_MACRO_0:
     if (record->event.pressed) {
-      SEND_STRING(SS_LALT(SS_LCTL(SS_TAP(X_H))));
+      SEND_STRING(SS_LCTL(SS_TAP(X_A)) SS_DELAY(SHORT_MACRO_DELAY) SS_TAP(X_H));
 
     }
     break;
     case ST_MACRO_1:
     if (record->event.pressed) {
-      SEND_STRING(SS_LCTL(SS_TAP(X_A)) SS_DELAY(100) SS_TAP(X_H));
+      SEND_STRING(SS_LSFT(SS_TAP(X_GRV)) SS_DELAY(MEDIUM_MACRO_DELAY) SS_TAP(X_X) SS_DELAY(MEDIUM_MACRO_DELAY) SS_TAP(X_C));
 
     }
     break;
     case ST_MACRO_2:
     if (record->event.pressed) {
-      SEND_STRING(SS_LALT(SS_LCTL(SS_TAP(X_L))));
+      SEND_STRING(SS_LSFT(SS_TAP(X_GRV)) SS_DELAY(MEDIUM_MACRO_DELAY) SS_TAP(X_X) SS_DELAY(MEDIUM_MACRO_DELAY) SS_TAP(X_L));
 
     }
     break;
     case ST_MACRO_3:
     if (record->event.pressed) {
-      SEND_STRING(SS_LCTL(SS_TAP(X_A)) SS_DELAY(100) SS_TAP(X_L));
+      SEND_STRING(SS_LSFT(SS_TAP(X_GRV)) SS_DELAY(MEDIUM_MACRO_DELAY) SS_TAP(X_X) SS_DELAY(MEDIUM_MACRO_DELAY) SS_TAP(X_X));
+
+    }
+    break;
+    case ST_MACRO_4:
+    if (record->event.pressed) {
+      SEND_STRING(SS_LCTL(SS_TAP(X_A)) SS_DELAY(SHORT_MACRO_DELAY) SS_TAP(X_L));
 
     }
     break;
