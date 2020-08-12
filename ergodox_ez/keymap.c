@@ -48,8 +48,9 @@ enum custom_keycodes {
   ST_MACRO_4,
   ST_MACRO_5,
   ST_MACRO_6,
-  CSA_LSPO,
   CSA_RSPC,
+  LEFT_SC_CONTROL,
+  RIGHT_SC_CONTROL,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -58,7 +59,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,         KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,           LALT(LCTL(KC_H)),                                LALT(LCTL(KC_L)),KC_Y,           KC_U,           KC_I,           KC_O,           KC_P,           CSA_BSLS,
     LT(1,KC_ESCAPE),KC_A,           KC_S,           KC_D,           KC_F,           KC_G,                                                                           KC_H,           KC_J,           KC_K,           KC_L,           KC_SCOLON,      CSA_RSPC,
     MO(1),          KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,           ST_MACRO_1,                                     ST_MACRO_6,     KC_N,           KC_M,           KC_COMMA,       KC_DOT,         CSA_SLASH,      KC_RSHIFT,
-    KC_LCTRL,       KC_LGUI,        KC_LALT,        CSA_LCBR,       KC_LCTRL,                                                                                                       KC_RCTRL,       CSA_RCBR,       KC_RALT,        KC_RGUI,        KC_RCTRL,
+    KC_LCTRL,       KC_LGUI,        KC_LALT,        CSA_LCBR,       LEFT_SC_CONTROL,                                                                                                       RIGHT_SC_CONTROL,       CSA_RCBR,       KC_RALT,        KC_RGUI,        KC_RCTRL,
                                                                                                     KC_TRANSPARENT, ST_MACRO_2,     KC_TRANSPARENT, KC_TRANSPARENT,
                                                                                                                     ST_MACRO_3,     KC_TRANSPARENT,
                                                                                     LT(2,KC_SPACE), MO(4),          ST_MACRO_4,     KC_TRANSPARENT, LT(5,KC_BSPACE),LT(3,KC_ENTER)
@@ -165,8 +166,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     }
     break;
-    case CSA_LSPO:
-      perform_space_cadet(record, KC_LSFT, KC_LSFT, KC_9);
+    case LEFT_SC_CONTROL:
+      perform_space_cadet(record, KC_LCTRL, KC_LSFT, KC_9);
+      return false;
+    case RIGHT_SC_CONTROL:
+      perform_space_cadet(record, KC_LCTRL, KC_LSFT, KC_0);
       return false;
     case CSA_RSPC:
       perform_space_cadet(record, KC_LSFT, KC_LSFT, KC_COMMA);
