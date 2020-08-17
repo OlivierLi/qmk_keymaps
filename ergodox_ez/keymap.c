@@ -53,6 +53,32 @@ enum custom_keycodes {
   RIGHT_SC_CONTROL,
 };
 
+enum tap_dance_actions {
+  TD_TMUX_NEXT,
+};
+
+static bool is_first_tmux_tap = false;
+void tmux_next_dance_each(qk_tap_dance_state_t *state, void *user_data) {
+  if (is_first_tmux_tap){
+    register_code16(KC_LCTRL);
+    tap_code(KC_A);
+    is_first_tmux_tap = false;
+  }
+
+  tap_code(KC_L);
+}
+
+void tmux_next_dance_reset(qk_tap_dance_state_t *state, void *user_data) {
+  unregister_code16(KC_LCTRL);
+  is_first_tmux_tap = true;
+}
+
+// All tap dance functions would go here. Only showing this one.
+qk_tap_dance_action_t tap_dance_actions[] = {
+  [TD_TMUX_NEXT] = ACTION_TAP_DANCE_FN_ADVANCED(tmux_next_dance_each, NULL, tmux_next_dance_reset),
+};
+
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_ergodox_pretty(
     KC_ESCAPE,      KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           ST_MACRO_0,                                     ST_MACRO_5,     KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           KC_DELETE,
@@ -62,7 +88,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LCTRL,       KC_LGUI,        KC_LALT,        CSA_LCBR,       LEFT_SC_CONTROL,                                                                                                       RIGHT_SC_CONTROL,       CSA_RCBR,       KC_RALT,        KC_RGUI,        KC_RCTRL,
                                                                                                     KC_TRANSPARENT, ST_MACRO_2,     KC_TRANSPARENT, KC_TRANSPARENT,
                                                                                                                     ST_MACRO_3,     KC_TRANSPARENT,
-                                                                                    LT(2,KC_SPACE), MO(4),          ST_MACRO_4,     KC_TRANSPARENT, LT(5,KC_BSPACE),LT(3,KC_ENTER)
+                                                                                    LT(4,KC_SPACE), MO(6),          ST_MACRO_5,     TD(TD_TMUX_NEXT), LT(5,KC_BSPACE),LT(3,KC_ENTER)
   ),
   [1] = LAYOUT_ergodox_pretty(
     KC_TRANSPARENT, KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_QUES,        KC_AMPR,        KC_ASTR,        KC_LPRN,        KC_RPRN,        KC_TRANSPARENT,
