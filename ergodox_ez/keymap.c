@@ -1,21 +1,9 @@
 #include QMK_KEYBOARD_H
+
 #include "version.h"
-#include "keymap_german.h"
-#include "keymap_nordic.h"
-#include "keymap_french.h"
-#include "keymap_spanish.h"
-#include "keymap_hungarian.h"
-#include "keymap_swedish.h"
-#include "keymap_br_abnt2.h"
 #include "keymap_canadian_multilingual.h"
-#include "keymap_german_ch.h"
-#include "keymap_jp.h"
-#include "keymap_bepo.h"
-#include "keymap_italian.h"
-#include "keymap_slovenian.h"
-#include "keymap_danish.h"
-#include "keymap_norwegian.h"
-#include "keymap_portuguese.h"
+
+#include "layer_with_mod_tap.h"
 
 #define KC_MAC_UNDO LGUI(KC_Z)
 #define KC_MAC_CUT LGUI(KC_X)
@@ -51,14 +39,15 @@ enum custom_keycodes {
   CSA_RSPC,
   LEFT_SC_CONTROL,
   RIGHT_SC_CONTROL,
+  LAYER_TAP_MOD,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_ergodox_pretty(
     KC_ESCAPE,      KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           ST_MACRO_0,                                     ST_MACRO_5,     KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           KC_DELETE,
     KC_TAB,         KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,           LALT(LCTL(KC_H)),                                LALT(LCTL(KC_L)),KC_Y,           KC_U,           KC_I,           KC_O,           KC_P,           CSA_BSLS,
-    LT(1,KC_ESCAPE),KC_A,           KC_S,           KC_D,           KC_F,           KC_G,                                                                           KC_H,           KC_J,           KC_K,           KC_L,           KC_SCOLON,      CSA_RSPC,
-    MO(1),          KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,           ST_MACRO_1,                                     ST_MACRO_6,     KC_N,           KC_M,           KC_COMMA,       KC_DOT,         CSA_SLASH,      KC_RSHIFT,
+    LAYER_TAP_MOD,  KC_A,           KC_S,           KC_D,           KC_F,           KC_G,                                                                           KC_H,           KC_J,           KC_K,           KC_L,           KC_SCOLON,      CSA_RSPC,
+    LAYER_TAP_MOD,          KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,           ST_MACRO_1,                                     ST_MACRO_6,     KC_N,           KC_M,           KC_COMMA,       KC_DOT,         CSA_SLASH,      KC_RSHIFT,
     KC_LCTRL,       KC_LGUI,        KC_LALT,        CSA_LCBR,       LEFT_SC_CONTROL,                                                                                                       RIGHT_SC_CONTROL,       CSA_RCBR,       KC_RALT,        KC_RGUI,        KC_RCTRL,
                                                                                                     KC_TRANSPARENT, ST_MACRO_2,     KC_TRANSPARENT, KC_TRANSPARENT,
                                                                                                                     ST_MACRO_3,     KC_TRANSPARENT,
@@ -66,13 +55,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [1] = LAYOUT_ergodox_pretty(
     KC_TRANSPARENT, KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_QUES,        KC_AMPR,        KC_ASTR,        KC_LPRN,        KC_RPRN,        KC_TRANSPARENT,
-    LSFT(KC_TAB),   KC_NO,          KC_NO,          LSFT(KC_E),     LSFT(KC_R),     LSFT(KC_T),     KC_TRANSPARENT,                                 KC_TRANSPARENT, LSFT(KC_Y),     LSFT(KC_U),     LSFT(KC_I),     LSFT(KC_O),     LSFT(KC_P),     CSA_PIPE,
-    KC_TRANSPARENT, KC_NO,          KC_NO,          LSFT(KC_D),     LSFT(KC_F),     LSFT(KC_G),                                                                     LSFT(KC_H),     LSFT(KC_J),     LSFT(KC_K),     LSFT(KC_L),     KC_COLN,        CSA_DQOT,
-    KC_TRANSPARENT, KC_NO,          KC_NO,          LSFT(KC_C),     LSFT(KC_V),     LSFT(KC_B),     KC_TRANSPARENT,                                 KC_TRANSPARENT, LSFT(KC_N),     LSFT(KC_M),     CSA_LESS,       CSA_GRTR,       CSA_QEST,       KC_RSHIFT,
+    KC_TRANSPARENT, KC_NO,          KC_NO,          KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, CSA_PIPE,
+    KC_TRANSPARENT, KC_NO,          KC_NO,          KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_COLN,        CSA_DQOT,
+    KC_TRANSPARENT, KC_NO,          KC_NO,          KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, CSA_LESS,       CSA_GRTR,       CSA_QEST,       KC_RSHIFT,
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
                                                                                                     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
                                                                                                                     KC_TRANSPARENT, KC_TRANSPARENT,
-                                                                                    KC_TRANSPARENT, LM(4,MOD_LSFT), KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
+                                                                                    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
   ),
   [2] = LAYOUT_ergodox_pretty(
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
@@ -116,14 +105,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 };
 
-
-rgblight_config_t rgblight_config;
 bool disable_layer_color = 0;
-
-bool suspended = false;
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+
+  if(keycode != LAYER_TAP_MOD)
+    layer_with_mod_in_progress = false;
+
   switch (keycode) {
+    case CSA_LESS:
+    case CSA_GRTR:
+    case CSA_PIPE:
+    if (!record->event.pressed) {
+        if(get_mods() & MOD_BIT(KC_LSFT)){
+          unregister_mods(MOD_BIT(KC_LSFT));
+          tap_code16(keycode);
+          register_mods(MOD_BIT(KC_LSFT));
+        }
+    }
+
+    return false;
     case ST_MACRO_0:
     if (record->event.pressed) {
       SEND_STRING(SS_LCTL(SS_TAP(X_A)) SS_DELAY(SHORT_MACRO_DELAY) SS_LCTL(SS_TAP(X_H)));
@@ -175,6 +175,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case CSA_RSPC:
       perform_space_cadet(record, KC_LSFT, KC_LSFT, KC_COMMA);
       return false;
+    case LAYER_TAP_MOD:
+      layer_with_mod_on_hold_key_on_tap(record, 1, KC_LSFT, KC_ESC);
+      return false;
     case RGB_SLD:
       if (record->event.pressed) {
         rgblight_mode(1);
@@ -216,6 +219,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
+rgblight_config_t rgblight_config;
 uint32_t layer_state_set_user(uint32_t state) {
 
     uint8_t layer = biton32(state);
@@ -254,47 +258,18 @@ uint32_t layer_state_set_user(uint32_t state) {
       default:
         break;
     }
+
     switch (layer) {
       case 0:
-        if(!disable_layer_color) {
-          rgblight_enable_noeeprom();
-          rgblight_mode_noeeprom(1);
-          rgblight_sethsv_noeeprom(198,227,168);
-        }
-        break;
       case 1:
-        if(!disable_layer_color) {
-          rgblight_enable_noeeprom();
-          rgblight_mode_noeeprom(1);
-          rgblight_sethsv_noeeprom(198,227,168);
-        }
-        break;
       case 2:
-        if(!disable_layer_color) {
-          rgblight_enable_noeeprom();
-          rgblight_mode_noeeprom(1);
-          rgblight_sethsv_noeeprom(122,255,255);
-        }
-        break;
       case 3:
-        if(!disable_layer_color) {
-          rgblight_enable_noeeprom();
-          rgblight_mode_noeeprom(1);
-          rgblight_sethsv_noeeprom(214,198,242);
-        }
-        break;
       case 4:
-        if(!disable_layer_color) {
-          rgblight_enable_noeeprom();
-          rgblight_mode_noeeprom(1);
-          rgblight_sethsv_noeeprom(255,163,255);
-        }
-        break;
       case 5:
         if(!disable_layer_color) {
           rgblight_enable_noeeprom();
           rgblight_mode_noeeprom(1);
-          rgblight_sethsv_noeeprom(167,255,255);
+          rgblight_sethsv_noeeprom(198,227,168);
         }
         break;
       default:
@@ -311,8 +286,8 @@ uint32_t layer_state_set_user(uint32_t state) {
         }
         break;
     }
-    return state;
 
+    return state;
 };
 
 void keyboard_post_init_user(void) {
