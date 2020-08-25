@@ -4,6 +4,7 @@
 #include "keymap_canadian_multilingual.h"
 
 #include "layer_with_mod_tap.h"
+#include "enums.h"
 
 #define KC_MAC_UNDO LGUI(KC_Z)
 #define KC_MAC_CUT LGUI(KC_X)
@@ -23,24 +24,6 @@
 
 #define SHORT_MACRO_DELAY 10
 #define MEDIUM_MACRO_DELAY 50
-
-enum custom_keycodes {
-  RGB_SLD = EZ_SAFE_RANGE,
-  HSV_172_255_255,
-  HSV_86_255_128,
-  HSV_27_255_255,
-  ST_MACRO_0,
-  ST_MACRO_1,
-  ST_MACRO_2,
-  ST_MACRO_3,
-  ST_MACRO_4,
-  ST_MACRO_5,
-  ST_MACRO_6,
-  CSA_RSPC,
-  LEFT_SC_CONTROL,
-  RIGHT_SC_CONTROL,
-  LAYER_TAP_MOD,
-};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_ergodox_pretty(
@@ -113,10 +96,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 bool disable_layer_color = 0;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
-  if(keycode != LAYER_TAP_MOD)
-    layer_with_mod_in_progress = false;
+  // Hook user define functionality here. -------------------------------------
+  layer_with_mod_tap_on_key_press(keycode);
+  // --------------------------------------------------------------------------
 
   switch (keycode) {
+    // Some codes won't register if paired with shift. Ommit it. --------------
     case CSA_LESS:
     case CSA_GRTR:
     case CSA_PIPE:
@@ -127,8 +112,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           register_mods(MOD_BIT(KC_LSFT));
         }
     }
-
     return false;
+    // -------------------------------------------------------------------------
+
     case ST_MACRO_0:
     if (record->event.pressed) {
       SEND_STRING(SS_LCTL(SS_TAP(X_A)) SS_DELAY(SHORT_MACRO_DELAY) SS_LCTL(SS_TAP(X_H)));
