@@ -96,8 +96,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 bool disable_layer_color = 0;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
-  // Hook user define functionality here. -------------------------------------
-  layer_with_mod_tap_on_key_press(keycode);
+  // Hook user defined functionality here. -------------------------------------
+  if(layer_with_mod_tap_on_key_press(record->event.pressed, keycode)){
+    return false;
+  }
+
   // --------------------------------------------------------------------------
 
   switch (keycode) {
