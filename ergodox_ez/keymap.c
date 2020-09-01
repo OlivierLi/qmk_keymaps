@@ -158,13 +158,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     break;
     case LEFT_SC_CONTROL:
-      perform_space_cadet(record, KC_LCTRL, KC_LSFT, KC_9);
+      perform_space_cadet(record, keycode, KC_LCTRL, KC_LSFT, KC_9);
       return false;
     case RIGHT_SC_CONTROL:
-      perform_space_cadet(record, KC_LCTRL, KC_LSFT, KC_0);
+      perform_space_cadet(record, keycode, KC_LCTRL, KC_LSFT, KC_0);
       return false;
     case CSA_RSPC:
-      perform_space_cadet(record, KC_LSFT, KC_LSFT, KC_COMMA);
+      perform_space_cadet(record, keycode, KC_LSFT, KC_LSFT, KC_COMMA);
       return false;
     case LAYER_TAP_MOD:
       layer_with_mod_on_hold_key_on_tap(record, 1, KC_LSFT, KC_ESC);
