@@ -57,6 +57,11 @@ bool layer_with_mod_tap_on_key_press(bool is_down, uint16_t keycode){
   }
 }
 
+// TODO: Support a tap modifier so we can use this with quotes
+// TODO: Find out why the quick :a example does not work in vim. What happens right now is that if LT, K, K , LT
+// happens all within TAPPING_TERM then we trigger the tapping option. We only want that when LT, LT, K, K happened during
+// the tapping term.
+
 // Call this function to get a layer activation on hold with |hold_mod| active and |tap_keycode| on tap.
 // 
 // TODO: There should be a |layer_tap_mod_in_progress| variable for each key that is bound to this function.
