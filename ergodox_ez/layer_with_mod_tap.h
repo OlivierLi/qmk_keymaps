@@ -17,22 +17,10 @@ static uint16_t pending_keys[PENDING_KEYS_BUFFER_SIZE] = {KC_NO, KC_NO, KC_NO, K
 static uint8_t pending_keys_count = 0;
 // ----------------------------------------------------------------------------
 
-//TODO: Setup the planck ez as a dev board. 
-
-//TODO: We can start handling thing differently depending on the length of the hold
-//TODO: Currently if the hold is held for less than TAPPING_TERM then it will trigger a tap. The alphas can still be buffered meanwhile
-//TODO: and then they only make it out on the next flush. Make sure the fix applied corrects that problem.
-
-//TODO: You have to handle the difference between up and down fully. if an up code is swallowed they the down code needs to and vice versa
-// the logic needs to be enhanced to take that into account
-
-//TODO: Also it's possible we need to change the logic of whether to tap or not when interrupted or it might conflic with this logic.
-
 void flush_pending(void){
   for(int i=0;i<pending_keys_count;++i){
     tap_code(pending_keys[i]);
   } 
-
   pending_keys_count = 0;
 }
 
@@ -40,33 +28,33 @@ void flush_pending(void){
 // hold get interrupted. On interruption a tap is not triggered.
 // Returns true if the key was absorbed and should not buble up.
 bool layer_with_mod_tap_on_key_press(bool is_down, uint16_t keycode){
+  const bool is_up = !is_down;
 
-  bool is_other = (keycode != LAYER_TAP_MOD);
-  bool is_up = !is_down;
-
-  //Key was released that is not layer hold tap.
-  if(is_up && is_other){
-    flush_pending();
+  // Any action on the layer tap mod key should be handled in the handler.
+  if(keycode == LAYER_TAP_MOD){
     return false;
   }
 
-  if(layer_tap_mod_in_progress && is_other){
+  // Outside of layer tap mod just handle normally.
+  if(!layer_tap_mod_in_progress){
+    return false;
+  }
 
-    // No more place to buffer keycodes. Just drop.
-    if(pending_keys_count == PENDING_KEYS_BUFFER_SIZE-1){
-      return true;
+  // Finished tapping a key during the tap mold hold. It cancels it.
+  if(is_up){
+    flush_pending();
+    layer_tap_mod_in_progress = false;
+    return false;
+  }
+  else {
+    // If no more place to buffer keycodes. Just drop.
+    if(pending_keys_count != PENDING_KEYS_BUFFER_SIZE-1){
+      pending_keys[pending_keys_count++] = keycode;
     }
 
-    pending_keys[pending_keys_count++] = keycode;
+    // Swallow the key.
     return true;
   }
-
-  // // // Hold was interrupted, no longer in progress.
-  if(is_other){
-    layer_tap_mod_in_progress = false;
-  }
-
-  return false;
 }
 
 // Call this function to get a layer activation on hold with |hold_mod| active and |tap_keycode| on tap.
@@ -99,11 +87,13 @@ void layer_with_mod_on_hold_key_on_tap(keyrecord_t *record, uint8_t layer, uint8
       if(layer_tap_mod_in_progress)
         tap_code(tap_keycode);
 
+      // Flush the keys that were buffered outside of the effect of the layer or modifier.
       flush_pending();
     }
     // If holding.
     else {
 
+      // Flush the pending keys under the effect of the modifier and layer.
       flush_pending();
 
       // Reset state.
