@@ -5,7 +5,7 @@
 #include "enums.h"
 
 // Constants ------------------------------------------------------------------
-#define PENDING_KEYS_BUFFER_SIZE 4
+#define PENDING_KEYS_BUFFER_SIZE 8
 // ----------------------------------------------------------------------------
 
 // Structs --------------------------------------------------------------------
@@ -18,15 +18,37 @@ struct InteruptingPress {
 // Variables ------------------------------------------------------------------
 static uint16_t last_layer_tap_mod_down_time = 0;
 static bool layer_tap_mod_in_progress = false;
+static bool interrupted = false;
 
-static uint16_t pending_keys[PENDING_KEYS_BUFFER_SIZE] = {KC_NO, KC_NO, KC_NO, KC_NO};
+static struct InteruptingPress pending_keys[PENDING_KEYS_BUFFER_SIZE] = {0};
 static uint8_t pending_keys_count = 0;
 // ----------------------------------------------------------------------------
 
+
+bool complete_press_buffered(void){
+  for(int i=0;i<pending_keys_count;++i){
+    if(!pending_keys[i].is_down){
+      return true;
+    }
+  }
+  //for(int i=0;i<pending_keys_count;++i){
+    //if(pending_keys[i].is_down){
+      //for(int j=i;j<pending_keys_count;++j){
+        //if(!pending_keys[j].is_down && (pending_keys[j].keycode == pending_keys[i].keycode)){
+          //return true;
+        //}
+      //}
+    //} 
+  //}
+  return false;
+}
+
 void flush_pending(void){
   for(int i=0;i<pending_keys_count;++i){
-    //dont tap here, activate/deactivate depending on the position
-    tap_code(pending_keys[i]);
+    if(pending_keys[i].is_down)
+     register_code16(pending_keys[i].keycode);
+    else
+     unregister_code16(pending_keys[i].keycode);
   } 
   pending_keys_count = 0;
 }
@@ -45,12 +67,22 @@ bool layer_with_mod_tap_on_key_press(bool is_down, uint16_t keycode){
     return false;
   }
 
+  if (timer_elapsed(last_layer_tap_mod_down_time) > TAPPING_TERM) {
+      interrupted = false;
+      flush_pending();
+  }
+
   // if a key is tapped up here we can go back on the pending_keys and replace the associated down with KC_NO
   // then we can tap the key?
 
   // If no more place to buffer keycodes. Just drop.
   if(pending_keys_count != PENDING_KEYS_BUFFER_SIZE-1){
-    pending_keys[pending_keys_count++] = keycode;
+    if (timer_elapsed(last_layer_tap_mod_down_time) < TAPPING_TERM) {
+      interrupted = true;
+    }
+
+    struct InteruptingPress interupting_press = {.is_down = is_down, .keycode = keycode};
+    pending_keys[pending_keys_count++] = interupting_press;
   }
 
   // Swallow the key.
@@ -77,19 +109,44 @@ void layer_with_mod_on_hold_key_on_tap(keyrecord_t *record, uint8_t layer, uint8
     layer_on(layer);
     register_mods(MOD_BIT(hold_mod));
     layer_tap_mod_in_progress = true;
+    interrupted = false;
   }
   // Key up.
   else{
-    flush_pending();
-
-    // Reset state.
-    unregister_mods(MOD_BIT(hold_mod));
-    layer_off(layer);
-
-    // If tapping.
     if (timer_elapsed(last_layer_tap_mod_down_time) < TAPPING_TERM) {
-      if(pending_keys_count == 0)
+      if(!interrupted){
+        // Reset state.
+        unregister_mods(MOD_BIT(hold_mod));
+        layer_off(layer);
         tap_code(tap_keycode);
+
+        // Key no longer held, no longer in progress.
+        layer_tap_mod_in_progress = false;
+        return;
+      }
+
+      if(complete_press_buffered()){
+        flush_pending();
+
+        // Reset state.
+        unregister_mods(MOD_BIT(hold_mod));
+        layer_off(layer);
+      }
+      else {
+        // Reset state.
+        unregister_mods(MOD_BIT(hold_mod));
+        layer_off(layer);
+
+        tap_code(tap_keycode);
+        flush_pending();
+      }
+    }
+    else {
+      flush_pending();
+
+      // Reset state.
+      unregister_mods(MOD_BIT(hold_mod));
+      layer_off(layer);
     }
 
     // Key no longer held, no longer in progress.
