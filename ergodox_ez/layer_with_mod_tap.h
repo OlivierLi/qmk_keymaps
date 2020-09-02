@@ -10,7 +10,7 @@
 
 // Structs --------------------------------------------------------------------
 struct InteruptingPress {
-  uint16_t time;
+  bool is_down;
   uint16_t keycode;
 };
 // ----------------------------------------------------------------------------
@@ -25,7 +25,7 @@ static uint8_t pending_keys_count = 0;
 
 void flush_pending(void){
   for(int i=0;i<pending_keys_count;++i){
-    dont tap here, activate/deactivate depending on the position
+    //dont tap here, activate/deactivate depending on the position
     tap_code(pending_keys[i]);
   } 
   pending_keys_count = 0;
@@ -44,6 +44,9 @@ bool layer_with_mod_tap_on_key_press(bool is_down, uint16_t keycode){
   if(!layer_tap_mod_in_progress){
     return false;
   }
+
+  // if a key is tapped up here we can go back on the pending_keys and replace the associated down with KC_NO
+  // then we can tap the key?
 
   // If no more place to buffer keycodes. Just drop.
   if(pending_keys_count != PENDING_KEYS_BUFFER_SIZE-1){
