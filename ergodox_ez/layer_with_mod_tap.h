@@ -8,9 +8,15 @@
 #define PENDING_KEYS_BUFFER_SIZE 4
 // ----------------------------------------------------------------------------
 
+// Structs --------------------------------------------------------------------
+struct InteruptingPress {
+  uint16_t time;
+  uint16_t keycode;
+};
+// ----------------------------------------------------------------------------
+
 // Variables ------------------------------------------------------------------
 static uint16_t last_layer_tap_mod_down_time = 0;
-static uint16_t last_layer_tap_mod_up_time = 0;
 static bool layer_tap_mod_in_progress = false;
 
 static uint16_t pending_keys[PENDING_KEYS_BUFFER_SIZE] = {KC_NO, KC_NO, KC_NO, KC_NO};
@@ -19,6 +25,7 @@ static uint8_t pending_keys_count = 0;
 
 void flush_pending(void){
   for(int i=0;i<pending_keys_count;++i){
+    dont tap here, activate/deactivate depending on the position
     tap_code(pending_keys[i]);
   } 
   pending_keys_count = 0;
@@ -28,8 +35,6 @@ void flush_pending(void){
 // hold get interrupted. On interruption a tap is not triggered.
 // Returns true if the key was absorbed and should not buble up.
 bool layer_with_mod_tap_on_key_press(bool is_down, uint16_t keycode){
-  const bool is_up = !is_down;
-
   // Any action on the layer tap mod key should be handled in the handler.
   if(keycode == LAYER_TAP_MOD){
     return false;
@@ -40,21 +45,13 @@ bool layer_with_mod_tap_on_key_press(bool is_down, uint16_t keycode){
     return false;
   }
 
-  // Finished tapping a key during the tap mold hold. It cancels it.
-  if(is_up){
-    flush_pending();
-    layer_tap_mod_in_progress = false;
-    return false;
+  // If no more place to buffer keycodes. Just drop.
+  if(pending_keys_count != PENDING_KEYS_BUFFER_SIZE-1){
+    pending_keys[pending_keys_count++] = keycode;
   }
-  else {
-    // If no more place to buffer keycodes. Just drop.
-    if(pending_keys_count != PENDING_KEYS_BUFFER_SIZE-1){
-      pending_keys[pending_keys_count++] = keycode;
-    }
 
-    // Swallow the key.
-    return true;
-  }
+  // Swallow the key.
+  return true;
 }
 
 // TODO: Support a tap modifier so we can use this with quotes
@@ -80,30 +77,16 @@ void layer_with_mod_on_hold_key_on_tap(keyrecord_t *record, uint8_t layer, uint8
   }
   // Key up.
   else{
-    last_layer_tap_mod_up_time = timer_read();
+    flush_pending();
+
+    // Reset state.
+    unregister_mods(MOD_BIT(hold_mod));
+    layer_off(layer);
 
     // If tapping.
     if (timer_elapsed(last_layer_tap_mod_down_time) < TAPPING_TERM) {
-      // Reset state before the tap.
-      unregister_mods(MOD_BIT(hold_mod));
-      layer_off(layer);
-
-      // If the operation was not interrupted.
-      if(layer_tap_mod_in_progress)
+      if(pending_keys_count == 0)
         tap_code(tap_keycode);
-
-      // Flush the keys that were buffered outside of the effect of the layer or modifier.
-      flush_pending();
-    }
-    // If holding.
-    else {
-
-      // Flush the pending keys under the effect of the modifier and layer.
-      flush_pending();
-
-      // Reset state.
-      unregister_mods(MOD_BIT(hold_mod));
-      layer_off(layer);
     }
 
     // Key no longer held, no longer in progress.
