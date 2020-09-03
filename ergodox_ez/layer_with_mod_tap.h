@@ -92,6 +92,11 @@ bool layer_with_mod_tap_on_key_press(bool is_down, uint16_t keycode){
 // a real problem if we start cording with keys that use this function.
 //
 // TODO: Support a tap modifier so we can use this with quotes
+
+TODO: Things work now but when replaying the keys we need to translate from layer to layer
+TODO: For example if a press of " detected within the tapping term but we end up going with
+TODO: the tap and replay then we need to translate that to the equivalent key in the previous
+TODO: layer. In this case: '
 void layer_with_mod_on_hold_key_on_tap(keyrecord_t *record, uint8_t layer, uint8_t hold_mod, uint8_t tap_keycode) {
   // Key down.
   if (record->event.pressed) {
@@ -100,6 +105,7 @@ void layer_with_mod_on_hold_key_on_tap(keyrecord_t *record, uint8_t layer, uint8
     // Activate the layer and modifier first.
     layer_on(layer);
     register_mods(MOD_BIT(hold_mod));
+
     layer_tap_mod_in_progress = true;
     interrupted = false;
   }
