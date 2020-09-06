@@ -1,8 +1,7 @@
 #ifndef LAYER_WITH_MOD_TAP_H
 #define LAYER_WITH_MOD_TAP_H
 
-#include QMK_KEYBOARD_H
-#include "enums.h"
+//#include "enums.h"
 
 // Constants ------------------------------------------------------------------
 #define PENDING_KEYS_BUFFER_SIZE 8
@@ -22,8 +21,28 @@ static bool interrupted = false;
 
 static struct InteruptingPress pending_keys[PENDING_KEYS_BUFFER_SIZE] = {0};
 static uint8_t pending_keys_count = 0;
+static uint8_t current_layer = 0; 
 // ----------------------------------------------------------------------------
 
+// translates key to keycode
+__attribute__ ((weak))
+  uint16_t keymap_key_to_keycode(uint8_t layer, keypos_t key)
+{
+  // Read entire word (16bits)
+  return pgm_read_word(&keymaps[(layer)][(key.row)][(key.col)]);
+}
+
+//TODO: This works, it just can't grab KC_TRANSPARENT! We can grab the keycode
+//TODO: That is sent from the user function and also use keymaps in conjunction!
+//TODO: Whenever get grab the key we can run down the layers and grab the key for
+//TODO: The highest layer that is activated that is not related to an active layer tap mod
+//TODO: That is what we use to save the keycode.
+
+uint16_t GetKeyFromMatrix(uint8_t layer, keyrecord_t *record){
+  //const uint8_t col = record->event.key.col;
+  //const uint8_t row = record->event.key.row;
+  return keymap_key_to_keycode(layer, record->event.key);
+}
 
 bool complete_press_buffered(void){
   for(int i=0;i<pending_keys_count;++i){
@@ -31,6 +50,7 @@ bool complete_press_buffered(void){
       return true;
     }
   }
+
   //for(int i=0;i<pending_keys_count;++i){
     //if(pending_keys[i].is_down){
       //for(int j=i;j<pending_keys_count;++j){
@@ -53,9 +73,15 @@ void flush_pending(void){
   pending_keys_count = 0;
 }
 
+void layer_with_mod_tap_on_layer_change(uint8_t layer){
+  current_layer = layer;
+}
+
 // This function has to be called on process_record_user() to know if a layer
 // hold got interrupted.  Returns true if the press was absorbed and should not buble up.
-bool layer_with_mod_tap_on_key_press(bool is_down, uint16_t keycode){
+bool layer_with_mod_tap_on_key_press(uint16_t keycode, keyrecord_t *record){
+  const bool is_down = record->event.pressed;
+
   // Any action on the layer tap mod key should be handled in the layer_with_mod_on_hold_key_on_tap().
   if(keycode == LAYER_TAP_MOD){
     return false;
@@ -73,11 +99,12 @@ bool layer_with_mod_tap_on_key_press(bool is_down, uint16_t keycode){
 
   // If no more place to buffer keycodes. Just drop.
   if(pending_keys_count != PENDING_KEYS_BUFFER_SIZE-1){
+		// TODO: Take the time of |record| here not Now();
     if (timer_elapsed(last_layer_tap_mod_down_time) < TAPPING_TERM) {
       interrupted = true;
     }
 
-    struct InteruptingPress interupting_press = {.is_down = is_down, .keycode = keycode};
+    struct InteruptingPress interupting_press = {.is_down = is_down, .keycode = GetKeyFromMatrix(current_layer, record)};
     pending_keys[pending_keys_count++] = interupting_press;
   }
 
@@ -93,10 +120,10 @@ bool layer_with_mod_tap_on_key_press(bool is_down, uint16_t keycode){
 //
 // TODO: Support a tap modifier so we can use this with quotes
 
-TODO: Things work now but when replaying the keys we need to translate from layer to layer
-TODO: For example if a press of " detected within the tapping term but we end up going with
-TODO: the tap and replay then we need to translate that to the equivalent key in the previous
-TODO: layer. In this case: '
+//TODO: Things work now but when replaying the keys we need to translate from layer to layer
+//TODO: For example if a press of " detected within the tapping term but we end up going with
+//TODO: the tap and replay then we need to translate that to the equivalent key in the previous
+//TODO: layer. In this case: '
 void layer_with_mod_on_hold_key_on_tap(keyrecord_t *record, uint8_t layer, uint8_t hold_mod, uint8_t tap_keycode) {
   // Key down.
   if (record->event.pressed) {

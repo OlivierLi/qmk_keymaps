@@ -97,10 +97,9 @@ bool disable_layer_color = 0;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   // Hook user defined functionality here. -------------------------------------
-  if(layer_with_mod_tap_on_key_press(record->event.pressed, keycode)){
+  if(layer_with_mod_tap_on_key_press(keycode, record)){
     return false;
   }
-
   // --------------------------------------------------------------------------
 
   switch (keycode) {
@@ -216,7 +215,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 rgblight_config_t rgblight_config;
 uint32_t layer_state_set_user(uint32_t state) {
 
-    uint8_t layer = biton32(state);
+    const uint8_t layer = biton32(state);
+    layer_with_mod_tap_on_layer_change(current_layer);
 
     ergodox_board_led_off();
     ergodox_right_led_1_off();

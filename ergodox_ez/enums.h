@@ -1,6 +1,8 @@
 #ifndef ENUMS_H
 #define ENUMS_H
 
+extern const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS]; 
+
 enum custom_keycodes {
   RGB_SLD = EZ_SAFE_RANGE,
   HSV_172_255_255,
