@@ -10,8 +10,6 @@ uint8_t pending_keys_count = 0;
 uint8_t current_layer = 0; 
 
 uint16_t GetKeyFromMatrix(uint8_t layer, keyrecord_t *record){
-  //const uint8_t col = record->event.key.col;
-  //const uint8_t row = record->event.key.row;
   return keymap_key_to_keycode(layer, record->event.key);
 }
 
@@ -24,20 +22,14 @@ __attribute__ ((weak))
 
 bool complete_press_buffered(void){
   for(int i=0;i<pending_keys_count;++i){
-    if(!pending_keys[i].is_down){
-      return true;
-    }
+    if(pending_keys[i].is_down){
+      for(int j=i;j<pending_keys_count;++j){
+        if(!pending_keys[j].is_down && (pending_keys[j].keycode == pending_keys[i].keycode)){
+          return true;
+        }
+      }
+    } 
   }
-
-  //for(int i=0;i<pending_keys_count;++i){
-    //if(pending_keys[i].is_down){
-      //for(int j=i;j<pending_keys_count;++j){
-        //if(!pending_keys[j].is_down && (pending_keys[j].keycode == pending_keys[i].keycode)){
-          //return true;
-        //}
-      //}
-    //} 
-  //}
   return false;
 }
 
